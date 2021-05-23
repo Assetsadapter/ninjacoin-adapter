@@ -1,0 +1,12 @@
+*.ini
+*.key
+build
+go.sum
+*.db
+.idea
+*.log
+.vscode
+beam-adapter
+/backup/
+/openwtester/backup/wallet.db_1583917148
+/openwtester/backup/wallet.db_1583917156
