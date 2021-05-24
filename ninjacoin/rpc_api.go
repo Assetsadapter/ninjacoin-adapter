@@ -310,21 +310,15 @@ func (c *ApiClient) GetAddressList() ([]string, error) {
 }
 
 //SendTransaction
-func (c *ApiClient) SendTransaction(from, to string, value, fee uint64, comment string) (string, error) {
+func (c *ApiClient) SendTransaction(to, amount string) (string, error) {
 
-	request := map[string]interface{}{
-		"value":   value,
-		"fee":     fee,
-		"from":    from,
-		"address": to,
-		"comment": comment,
-	}
+	sendAmount := convertFromAmount(amount, Decimal)
 
-	r, err := c.call("tx_send", request)
+	txId, err := c.WalletClient.SendTransactionBasic(to, "", sendAmount)
 	if err != nil {
 		return "", err
 	}
-	return r.Get("txId").String(), nil
+	return txId, nil
 }
 
 //GetBlockByHeight
@@ -420,15 +414,11 @@ func (c *ApiClient) GetAddressBalance(address string) (string, error) {
 }
 
 //CancelTx 取消交易
-func (c *ApiClient) ValidateAddress(address string) (bool, error) {
-	request := map[string]interface{}{
-		"address": address,
-	}
+func (c *ApiClient) ValidateAddress(address string) bool {
 
-	r, err := c.call("validate_address", request)
+	_, err := c.WalletClient.ValidateAddress(address)
 	if err != nil {
-		return false, err
+		return false
 	}
-
-	return r.Get("is_valid").Bool(), nil
+	return true
 }

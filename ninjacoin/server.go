@@ -338,11 +338,7 @@ func (server *Server) validateAddress(ctx *owtp.Context) {
 	}
 
 	address := ctx.Params().Get("address").String()
-	isValid, err := server.wm.ValidateAddress(address)
-	if err != nil {
-		ctx.Response(nil, owtp.ErrCustomError, err.Error())
-		return
-	}
+	isValid := server.wm.ValidateAddress(address)
 
 	ctx.Response(map[string]string{"isValid": strconv.FormatBool(isValid)}, owtp.StatusSuccess, "success")
 

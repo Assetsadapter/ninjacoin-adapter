@@ -265,9 +265,7 @@ func (wm *WalletManager) SummaryWalletProcess(summaryToAddress string) (string, 
 			return "", "", "", fmt.Errorf("wallet address is not created")
 		}
 
-		from := addresses[0]
-
-		txid, err := wm.walletClient.SendTransaction(from, summaryToAddress, sumAmount_BI.Uint64(), fixFees.Uint64(), "")
+		txid, err := wm.walletClient.SendTransaction(summaryToAddress, sumAmount.String())
 		if err != nil {
 			return "", "", "", err
 		}
@@ -318,7 +316,7 @@ func (wm *WalletManager) SummaryWalletProcessRemote(summaryToAddress string) (st
 }
 
 //验证地址格式
-func (wm *WalletManager) ValidateAddress(address string) (bool, error) {
+func (wm *WalletManager) ValidateAddress(address string) bool {
 	return wm.walletClient.ValidateAddress(address)
 
 }

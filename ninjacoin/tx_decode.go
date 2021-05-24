@@ -111,9 +111,8 @@ func (decoder *TransactionDecoder) VerifyRawTransaction(wrapper openwallet.Walle
 func (decoder *TransactionDecoder) SubmitRawTransaction(wrapper openwallet.WalletDAI, rawTx *openwallet.RawTransaction) (*openwallet.Transaction, error) {
 
 	var (
-		to      string
-		amount  string
-		fixFees *big.Int
+		to     string
+		amount string
 	)
 
 	for k, v := range rawTx.To {
@@ -124,44 +123,12 @@ func (decoder *TransactionDecoder) SubmitRawTransaction(wrapper openwallet.Walle
 	amountDec, _ := decimal.NewFromString(amount)
 	amountDec = amountDec.Shift(decoder.wm.Decimal())
 
-	//取一个地址作为发送
-	addresses, err := decoder.wm.walletClient.GetAddressList()
-	if err != nil {
-		return nil, err
-	}
-
-	if addresses == nil || len(addresses) == 0 {
-		return nil, fmt.Errorf("wallet address is not created")
-	}
-
-	from := addresses[0]
-
-	if len(rawTx.FeeRate) > 0 {
-		fixFees = common.StringNumToBigIntWithExp(rawTx.FeeRate, decoder.wm.Decimal())
-		rawTx.Fees = rawTx.FeeRate
-	} else {
-		fixFees = common.StringNumToBigIntWithExp(decoder.wm.Config.fixfees, decoder.wm.Decimal())
-		rawTx.FeeRate = decoder.wm.Config.fixfees
-		rawTx.Fees = decoder.wm.Config.fixfees
-	}
-
-	if fixFees.Cmp(big.NewInt(0)) <= 0 {
-		return nil, openwallet.Errorf(openwallet.ErrUnknownException, "fee is lower than 0")
-	}
-
-	//walletStatus, err := decoder.wm.walletClient.GetWalletStatus()
-	if err != nil {
-		return nil, err
-	}
-
-	sendAmount := uint64(amountDec.IntPart())
-
 	//判断钱包余额是否足够
 	//if walletStatus.Available < sendAmount+fixFees.Uint64() {
 	//	return nil, openwallet.Errorf(openwallet.ErrInsufficientBalanceOfAccount, "wallet available balance is not enough")
 	//}
 
-	txid, err := decoder.wm.walletClient.SendTransaction(from, to, sendAmount, fixFees.Uint64(), "")
+	txid, err := decoder.wm.walletClient.SendTransaction(to, amount)
 	if err != nil {
 		return nil, err
 	}
@@ -171,14 +138,12 @@ func (decoder *TransactionDecoder) SubmitRawTransaction(wrapper openwallet.Walle
 	rawTx.TxID = txid
 	rawTx.IsSubmit = true
 
-	txFrom := []string{fmt.Sprintf("%s:%s", from, amount)}
 	txTo := []string{fmt.Sprintf("%s:%s", to, amount)}
 
 	decimals := decoder.wm.Decimal()
 
 	//记录一个交易单
 	tx := &openwallet.Transaction{
-		From:       txFrom,
 		To:         txTo,
 		Amount:     amount,
 		Coin:       rawTx.Coin,

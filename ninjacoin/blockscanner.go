@@ -694,10 +694,10 @@ func (bs *NinjaBlockScanner) InitExtractResult(tx walletapi.Transaction, feePaye
 	//} else if operate == 2 {
 	//	bs.extractTxOutput(tx, blockHeight, blockHash, txExtractData)
 	//}
-	if operate == 2 {
-		bs.extractTxOutput(tx, blockHeight, blockHash, txExtractData, scanTargetFunc)
-	}
-	if len(txExtractData.TxOutputs) == 0 {
+
+	bs.extractTxInput(tx, blockHeight, blockHash, txExtractData, scanTargetFunc)
+	bs.extractTxOutput(tx, blockHeight, blockHash, txExtractData, scanTargetFunc)
+	if len(txExtractData.TxInputs) == 0 && len(txExtractData.TxOutputs) == 0 {
 		return
 	}
 	txExtractDataArray = append(txExtractDataArray, txExtractData)
@@ -705,27 +705,35 @@ func (bs *NinjaBlockScanner) InitExtractResult(tx walletapi.Transaction, feePaye
 }
 
 //extractTxInput 提取交易单输入部分,无需手续费，所以只包含1个TxInput
-func (bs *NinjaBlockScanner) extractTxInput(tx walletapi.Transaction, blockHeight uint64, blockHash string, txExtractData *openwallet.TxExtractData) {
-	//coin := openwallet.Coin{
-	//	Symbol:     bs.wm.Symbol(),
-	//	IsContract: false,
-	//}
-	//
-	//amount, _ := decimal.NewFromString(tx.Value)
-	//
-	////主网from交易转账信息，第一个TxInput
-	//txInput := &openwallet.TxInput{}
-	//txInput.Recharge.Sid = openwallet.GenTxInputSID(tx.TxId, bs.wm.Symbol(), coin.ContractID, uint64(0))
-	//txInput.Recharge.TxID = tx.TxId
-	//txInput.Recharge.Address = tx.From
-	//txInput.Recharge.Coin = coin
-	//txInput.Recharge.Amount = amount.String()
-	//txInput.Recharge.BlockHash = blockHash
-	//txInput.Recharge.BlockHeight = blockHeight
-	//txInput.Recharge.Index = 0 //账户模型填0
-	//txInput.Recharge.CreateAt = int64(0)
-	//txExtractData.TxInputs = append(txExtractData.TxInputs, txInput)
+func (bs *NinjaBlockScanner) extractTxInput(tx walletapi.Transaction, blockHeight uint64, blockHash string, txExtractData *openwallet.TxExtractData, scanTargetFunc openwallet.BlockScanTargetFunc) {
+	coin := openwallet.Coin{
+		Symbol:     bs.wm.Symbol(),
+		IsContract: false,
+	}
 
+	for _, tran := range tx.Transfers {
+		if tran.Amount < 0 {
+			_, ok := scanTargetFunc(openwallet.ScanTarget{
+				Address:          tran.Address,
+				BalanceModelType: openwallet.BalanceModelTypeAddress,
+			})
+			if !ok {
+				continue
+			}
+			//主网from交易转账信息，第一个TxInput
+			txInput := &openwallet.TxInput{}
+			txInput.Recharge.Sid = openwallet.GenTxInputSID(tx.Hash, bs.wm.Symbol(), coin.ContractID, uint64(0))
+			txInput.Recharge.TxID = tx.Hash
+			txInput.Recharge.Address = tran.Address
+			txInput.Recharge.Coin = coin
+			txInput.Recharge.Amount = convertToAmount(uint64(-tran.Amount), bs.wm.Decimal())
+			txInput.Recharge.BlockHash = blockHash
+			txInput.Recharge.BlockHeight = blockHeight
+			txInput.Recharge.Index = 0 //账户模型填0
+			txInput.Recharge.CreateAt = int64(0)
+			txExtractData.TxInputs = append(txExtractData.TxInputs, txInput)
+		}
+	}
 }
 
 //extractTxOutput 提取交易单输入部分,只有一个TxOutPut
