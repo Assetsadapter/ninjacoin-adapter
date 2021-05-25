@@ -239,7 +239,7 @@ func (bs *NinjaBlockScanner) ScanBlockTask() {
 		}
 
 		//是否已到最新高度
-		if currentHeight+1 >= maxHeightBlock.CurrentHeight {
+		if currentHeight+2 >= maxHeightBlock.CurrentHeight {
 			bs.wm.Log.Std.Info("block scanner has scanned full chain data. Current height: %d", maxHeightBlock.CurrentHeight)
 			break
 		}
