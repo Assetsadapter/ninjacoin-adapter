@@ -357,7 +357,7 @@ func (c *Client) GetWalletStatus() (*WalletStatus, error) {
 }
 
 //打币
-func (c *Client) TransFCoin(toAddress, toAmount, paymenId string) (string, error) {
+func (c *Client) TransFCoin(toAddress, toAmount, paymentId string) (string, error) {
 
 	var (
 		txId   string
