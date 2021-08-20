@@ -357,7 +357,7 @@ func (c *Client) GetWalletStatus() (*WalletStatus, error) {
 }
 
 //打币
-func (c *Client) TransFCoin(toAddress, toAmount string) (string, error) {
+func (c *Client) TransFCoin(toAddress, toAmount, paymenId string) (string, error) {
 
 	var (
 		txId   string
@@ -370,6 +370,7 @@ func (c *Client) TransFCoin(toAddress, toAmount string) (string, error) {
 	params := map[string]interface{}{
 		"toAddress": toAddress,
 		"toAmount":  toAmount,
+		"paymentId": paymentId,
 	}
 
 	err := c.node.Call(trustHostID, "transFCoin", params,

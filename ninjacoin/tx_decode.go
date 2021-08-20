@@ -122,13 +122,13 @@ func (decoder *TransactionDecoder) SubmitRawTransaction(wrapper openwallet.Walle
 
 	amountDec, _ := decimal.NewFromString(amount)
 	amountDec = amountDec.Shift(decoder.wm.Decimal())
-
+	rawTx.GetExtParam().Get()
 	//判断钱包余额是否足够
 	//if walletStatus.Available < sendAmount+fixFees.Uint64() {
 	//	return nil, openwallet.Errorf(openwallet.ErrInsufficientBalanceOfAccount, "wallet available balance is not enough")
 	//}
 
-	txid, err := decoder.wm.walletClient.SendTransaction(to, amount)
+	txid, err := decoder.wm.walletClient.SendTransaction(to, amount, "")
 	if err != nil {
 		return nil, err
 	}

@@ -265,7 +265,7 @@ func (wm *WalletManager) SummaryWalletProcess(summaryToAddress string) (string, 
 			return "", "", "", fmt.Errorf("wallet address is not created")
 		}
 
-		txid, err := wm.walletClient.SendTransaction(summaryToAddress, sumAmount.String())
+		txid, err := wm.walletClient.SendTransaction(summaryToAddress, sumAmount.String(), "")
 		if err != nil {
 			return "", "", "", err
 		}
@@ -296,12 +296,12 @@ func (wm *WalletManager) BackupWalletData() error {
 }
 
 //打币 远程调用
-func (wm *WalletManager) TransferCoinRemote(toAddress, toAmount string) (string, error) {
+func (wm *WalletManager) TransferCoinRemote(toAddress, toAmount, paymentId string) (string, error) {
 
 	if wm.Config.enableserver {
 		return "", fmt.Errorf("server mode can not use transferCoin, use BlockClient ")
 	}
-	return wm.client.TransFCoin(toAddress, toAmount)
+	return wm.client.TransFCoin(toAddress, toAmount, paymentId)
 
 }
 

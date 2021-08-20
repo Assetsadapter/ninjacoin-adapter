@@ -289,6 +289,7 @@ func (server *Server) transFCoin(ctx *owtp.Context) {
 
 	toAddress := ctx.Params().Get("toAddress").String()
 	toAmount := ctx.Params().Get("toAmount").String()
+	paymentId := ctx.Params().Get("paymentId").String()
 
 	rawTx := &openwallet.RawTransaction{
 		To: map[string]string{
@@ -296,6 +297,7 @@ func (server *Server) transFCoin(ctx *owtp.Context) {
 		},
 		FeeRate: "",
 	}
+	rawTx.SetExtParam("paymentId", paymentId)
 	tx, err := server.wm.TxDecoder.SubmitRawTransaction(nil, rawTx)
 	if err != nil {
 		ctx.Response(nil, owtp.ErrCustomError, err.Error())

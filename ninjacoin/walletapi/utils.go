@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/blocktree/openwallet/log"
 	"io/ioutil"
 	"net/http"
 )
@@ -46,6 +47,9 @@ func (wAPI WalletAPI) sendRequest(method, uri, data string) (*map[string]interfa
 	if err == nil {
 		json.Unmarshal(rawData, &body)
 	}
+	log.Info("ninja respone1:", string(rawData))
+	log.Info("ninja respone2:", body)
+	log.Info("ninja respone3:", resp)
 
 	if resp.StatusCode == 400 {
 		return nil, nil, errors.New(body["errorMessage"].(string))

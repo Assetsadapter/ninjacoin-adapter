@@ -310,7 +310,7 @@ func (c *ApiClient) GetAddressList() ([]string, error) {
 }
 
 //SendTransaction
-func (c *ApiClient) SendTransaction(to, amount string) (string, error) {
+func (c *ApiClient) SendTransaction(to, amount, paymentId string) (string, error) {
 
 	sendAmount := convertFromAmount(amount, Decimal)
 
