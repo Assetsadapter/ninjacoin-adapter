@@ -14,7 +14,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mr-tron/base58 v1.1.1
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24
-	github.com/tidwall/gjson v1.2.1
+	github.com/tidwall/gjson v1.8.1
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
