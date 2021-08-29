@@ -1,6 +1,8 @@
 package walletapi
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -247,7 +249,10 @@ func (wAPI WalletAPI) GetAddressTransactionsInRange(address string, start, end u
 // SendTransactionBasic - sends a transaction
 func (wAPI WalletAPI) SendTransactionBasic(destination, paymentID string, amount uint64) (string, error) {
 	var txHash string
-
+	if paymentID != "" {
+		var paymentBytes [32]byte = sha256.Sum256([]byte(paymentID))
+		paymentID = hex.EncodeToString(paymentBytes[:])
+	}
 	resp, _, err := wAPI.sendRequest(
 		"POST",
 		wAPI.Host+":"+wAPI.Port+"/transactions/send/basic",

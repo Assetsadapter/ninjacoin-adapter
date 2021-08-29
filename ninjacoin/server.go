@@ -2,10 +2,11 @@ package ninjacoin
 
 import (
 	"encoding/json"
+	"strconv"
+
 	"github.com/blocktree/openwallet/log"
 	"github.com/blocktree/openwallet/openwallet"
 	"github.com/blocktree/openwallet/owtp"
-	"strconv"
 )
 
 type Server struct {

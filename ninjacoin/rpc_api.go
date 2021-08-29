@@ -2,11 +2,12 @@ package ninjacoin
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Assetsadapter/ninjacoin-adapter/ninjacoin/walletapi"
 	"github.com/blocktree/openwallet/log"
 	"github.com/imroc/req"
 	"github.com/tidwall/gjson"
-	"net/http"
 )
 
 // A Client is a Bitcoin RPC BlockClient. It performs RPCs over HTTP using JSON
@@ -314,7 +315,7 @@ func (c *ApiClient) SendTransaction(to, amount, paymentId string) (string, error
 
 	sendAmount := convertFromAmount(amount, Decimal)
 
-	txId, err := c.WalletClient.SendTransactionBasic(to, "", sendAmount)
+	txId, err := c.WalletClient.SendTransactionBasic(to, paymentId, sendAmount)
 	if err != nil {
 		return "", err
 	}
@@ -413,7 +414,7 @@ func (c *ApiClient) GetAddressBalance(address string) (string, error) {
 
 }
 
-//CancelTx 取消交易
+//验证地址
 func (c *ApiClient) ValidateAddress(address string) bool {
 
 	_, err := c.WalletClient.ValidateAddress(address)
@@ -421,4 +422,15 @@ func (c *ApiClient) ValidateAddress(address string) bool {
 		return false
 	}
 	return true
+}
+
+//GetWalletStatus
+func (c *ApiClient) optimizeWallet() (string, error) {
+
+	txId, err := c.WalletClient.SendFusionBasic()
+	if err != nil {
+		return "", err
+	}
+
+	return txId, nil
 }

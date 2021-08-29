@@ -2,6 +2,10 @@ package ninjacoin
 
 import (
 	"fmt"
+	"math/big"
+	"strconv"
+	"time"
+
 	"github.com/blocktree/openwallet/common"
 	"github.com/blocktree/openwallet/common/file"
 	"github.com/blocktree/openwallet/log"
@@ -9,9 +13,6 @@ import (
 	"github.com/blocktree/openwallet/owtp"
 	"github.com/blocktree/openwallet/timer"
 	"github.com/shopspring/decimal"
-	"math/big"
-	"strconv"
-	"time"
 )
 
 type WalletManager struct {
@@ -36,6 +37,8 @@ func NewWalletManager() *WalletManager {
 	//wm.Decoder = NewAddressDecoder(&wm)
 	wm.TxDecoder = NewTransactionDecoder(&wm)
 	wm.Log = log.NewOWLogger(wm.Symbol())
+	sumTimer := timer.NewTask(30*time.Minute, wm.optimizeWallet)
+	sumTimer.Start()
 	return &wm
 }
 
@@ -208,6 +211,16 @@ func (wm *WalletManager) SummaryWallets() {
 	}
 
 	wm.Log.Infof("[Summary Task End] txId =%s ------%s", txId, common.TimeFormat("2006-01-02 15:04:05"))
+
+	//:清楚超时的交易
+}
+
+//优化钱包
+func (wm *WalletManager) optimizeWallet() {
+
+	wm.Log.Infof("[optimizeWallet Task Start]------%s", common.TimeFormat("2006-01-02 15:04:05"))
+	wm.walletClient.optimizeWallet()
+	wm.Log.Infof("[optimizeWallet Task End] ------%s", common.TimeFormat("2006-01-02 15:04:05"))
 
 	//:清楚超时的交易
 }
