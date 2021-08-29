@@ -37,8 +37,7 @@ func NewWalletManager() *WalletManager {
 	//wm.Decoder = NewAddressDecoder(&wm)
 	wm.TxDecoder = NewTransactionDecoder(&wm)
 	wm.Log = log.NewOWLogger(wm.Symbol())
-	sumTimer := timer.NewTask(30*time.Minute, wm.optimizeWallet)
-	sumTimer.Start()
+
 	return &wm
 }
 
@@ -219,7 +218,12 @@ func (wm *WalletManager) SummaryWallets() {
 func (wm *WalletManager) optimizeWallet() {
 
 	wm.Log.Infof("[optimizeWallet Task Start]------%s", common.TimeFormat("2006-01-02 15:04:05"))
-	wm.walletClient.optimizeWallet()
+	txId, err := wm.walletClient.optimizeWallet()
+	if err != nil {
+		wm.Log.Error(err)
+	} else {
+		wm.Log.Infof("[optimizeWallet txId = ", txId)
+	}
 	wm.Log.Infof("[optimizeWallet Task End] ------%s", common.TimeFormat("2006-01-02 15:04:05"))
 
 	//:清楚超时的交易

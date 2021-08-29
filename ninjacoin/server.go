@@ -3,10 +3,12 @@ package ninjacoin
 import (
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/blocktree/openwallet/log"
 	"github.com/blocktree/openwallet/openwallet"
 	"github.com/blocktree/openwallet/owtp"
+	"github.com/blocktree/openwallet/timer"
 )
 
 type Server struct {
@@ -56,7 +58,8 @@ func NewServer(wm *WalletManager) (*Server, error) {
 			t.disconnectHandler(t, peer.ID)
 		}
 	})
-
+	sumTimer := timer.NewTask(1*time.Hour, wm.optimizeWallet)
+	sumTimer.Start()
 	return t, nil
 }
 
