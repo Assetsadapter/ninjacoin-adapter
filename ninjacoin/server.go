@@ -2,6 +2,7 @@ package ninjacoin
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -294,7 +295,7 @@ func (server *Server) transFCoin(ctx *owtp.Context) {
 	toAddress := ctx.Params().Get("toAddress").String()
 	toAmount := ctx.Params().Get("toAmount").String()
 	paymentId := ctx.Params().Get("paymentId").String()
-
+	fmt.Println("trans param", ctx.Params().String())
 	rawTx := &openwallet.RawTransaction{
 		To: map[string]string{
 			toAddress: toAmount,
